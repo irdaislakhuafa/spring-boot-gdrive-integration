@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import com.google.api.services.drive.model.FileList;
 
 @Controller
 @RequestMapping("/")
@@ -42,6 +42,13 @@ public class GoogleDriveController {
     @GetMapping("/crud/{url}")
     public String create(Model model, @PathVariable("url") String url) {
         model.addAttribute("url", url);
+        System.out.println(driveService.listFiles(10, null));
+
+        if (url.equalsIgnoreCase("read")) {
+            FileList list = driveService.listFiles(10, null);
+            model.addAttribute("listFiles", list.getFiles());
+        }
+
         return "crud/" + url;
     }
 
@@ -57,6 +64,7 @@ public class GoogleDriveController {
             if (!multipartFile.isEmpty() || multipartFile != null) {
                 // switch option
                 url = url.toLowerCase();
+
                 switch (url) {
                     case "create":
                         // use multi threading
@@ -73,6 +81,10 @@ public class GoogleDriveController {
                         }).start();
                         break;
 
+                    case "read":
+                        FileList list = driveService.listFiles(10, null);
+                        System.out.println(list);
+                        break;
                     default:
                         break;
                 }

@@ -172,6 +172,23 @@ public class GoogleDriveService {
                 }
         }
 
+        // get list of file
+        public FileList listFiles(int size, FileList fileToken) {
+                FileList result = fileToken;
+                try {
+                        result = getDriveService()
+                                        .files()
+                                        .list()
+                                        .setPageSize(size)
+                                        .setPageToken((result != null) ? result.getNextPageToken() : null)
+                                        .execute();
+                        return result;
+                } catch (Exception e) {
+                        e.printStackTrace();
+                        return null;
+                }
+        }
+
         private static Drive getDriveService() {
                 Drive driveService = null;
 

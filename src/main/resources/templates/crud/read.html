@@ -1,0 +1,36 @@
+<div th:replace="~{fragments/get::head}"></div>
+<div th:replace="~{fragments/get::header}"></div>
+
+<div class="container">
+    <div th:replace="~{fragments/crud::banner(${url})}"></div>
+
+    <!-- <div th:text="${listFiles}"></div> -->
+    <!-- <div class="mx-auto"> -->
+    <table class="table table-striped table-responsive mx-auto">
+        <thead class="thead-inverse">
+            <tr>
+                <th>ID</th>
+                <th>NAME</th>
+                <th>TYPE</th>
+                <th>ACTION</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="file, index : ${listFiles}">
+                <!-- <td scope="row"></td> -->
+                <td th:text="${index.index + 1}"></td>
+                <!-- <td th:text="${file.id}"></td> -->
+                <td th:text="${file.name}"></td>
+                <td th:text="${file.mimeType}"></td>
+                <td>
+                    <button type="button" class="btn btn-danger">Delete</button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <!-- </div> -->
+
+</div>
+
+<div th:replace="~{fragments/get::footer}"></div>
+<div th:replace="~{fragments/get::js}"></div>
