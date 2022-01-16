@@ -1,0 +1,15 @@
+<div th:fragment="banner(mode)">
+    <div class="page-banner">
+        <div class="row justify-content-center align-items-center h-100">
+            <div class="col-md-6">
+                <nav aria-label="Breadcrumb">
+                    <ul class="breadcrumb justify-content-center py-0 bg-transparent">
+                        <li class="breadcrumb-item"><a href="/">Crud</a></li>
+                        <li class="breadcrumb-item active st-case" th:text="${mode}">Create</li>
+                    </ul>
+                </nav>
+                <h1 class="text-center st-case" th:text="${mode}">Our Services</h1>
+            </div>
+        </div>
+    </div>
+</div>
