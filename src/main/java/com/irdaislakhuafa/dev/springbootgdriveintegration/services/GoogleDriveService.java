@@ -2,6 +2,7 @@ package com.irdaislakhuafa.dev.springbootgdriveintegration.services;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -82,11 +83,27 @@ public class GoogleDriveService {
 
         public List<File> findByName(String name) {
                 try {
+                        FileList files = null;
                         getDriveService().files().emptyTrash();
-                        FileList files = getDriveService().files().list()
+                        files = getDriveService().files().list()
+                                        // .setPageSize(1)
                                         .setFields("nextPageToken, files(id, name, mimeType)")
                                         .execute();
-                        return files.getFiles();
+                        // System.out.println("Next Page = " + files.getNextPageToken());
+
+                        List<File> list = new ArrayList<>();
+
+                        files.getFiles().forEach((data) -> {
+                                if (data.getName().startsWith(name)
+                                                || data.getName().endsWith(name)
+                                                || data.getName().contains(name)
+                                                || data.getName().equalsIgnoreCase(name)) {
+                                        list.add(data);
+                                }
+                        });
+                        // System.out.println(files.getFiles().get(0).getName());
+                        // return files.getFiles();
+                        return list;
                 } catch (Exception e) {
                         e.printStackTrace();
                         return null;

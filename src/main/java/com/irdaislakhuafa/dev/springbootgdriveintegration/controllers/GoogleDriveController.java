@@ -22,18 +22,22 @@ public class GoogleDriveController {
     @Autowired
     private GoogleDriveService driveService;
 
-    @GetMapping
-    public String redirectToHome(Model mode) {
-        // if (driveService.findById("1JX8wizrfHPGZ_cUOed31TslAWLIDJImL") == null) {
-        // System.out.println(driveService.createFolder("irda"));
-        // } else {
-        // System.out.println(driveService.findById("1JX8wizrfHPGZ_cUOed31TslAWLIDJImL"));
-        // }
-        System.err.println(driveService.findByName("irda"));
-        return "index";
-    }
+    /*
+     * @GetMapping
+     * public String redirectToHome(Model mode) {
+     * // if (driveService.findById("1JX8wizrfHPGZ_cUOed31TslAWLIDJImL") == null) {
+     * // System.out.println(driveService.createFolder("irda"));
+     * // } else {
+     * //
+     * System.out.println(driveService.findById("1JX8wizrfHPGZ_cUOed31TslAWLIDJImL")
+     * );
+     * // }
+     * // System.err.println(driveService.findByName("irda"));
+     * return "index";
+     * }
+     */
 
-    @GetMapping("/home")
+    @GetMapping({"/home", "/"})
     public String index(Model model) {
         model.addAttribute("title", "Simple Google Drive CRUD | " + MY_NAME);
         model.addAttribute("homeTitle", String.format("Hi, my name is %s", MY_NAME));
