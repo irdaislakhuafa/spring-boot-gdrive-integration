@@ -8,7 +8,11 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequestMapping("/")
@@ -22,22 +26,7 @@ public class GoogleDriveController {
     @Autowired
     private GoogleDriveService driveService;
 
-    /*
-     * @GetMapping
-     * public String redirectToHome(Model mode) {
-     * // if (driveService.findById("1JX8wizrfHPGZ_cUOed31TslAWLIDJImL") == null) {
-     * // System.out.println(driveService.createFolder("irda"));
-     * // } else {
-     * //
-     * System.out.println(driveService.findById("1JX8wizrfHPGZ_cUOed31TslAWLIDJImL")
-     * );
-     * // }
-     * // System.err.println(driveService.findByName("irda"));
-     * return "index";
-     * }
-     */
-
-    @GetMapping({"/home", "/"})
+    @GetMapping({ "/home", "/" })
     public String index(Model model) {
         model.addAttribute("title", "Simple Google Drive CRUD | " + MY_NAME);
         model.addAttribute("homeTitle", String.format("Hi, my name is %s", MY_NAME));
@@ -49,9 +38,49 @@ public class GoogleDriveController {
         return "index";
     }
 
+    // crud get
     @GetMapping("/crud/{url}")
     public String create(Model model, @PathVariable("url") String url) {
         model.addAttribute("url", url);
         return "crud/" + url;
+    }
+
+    // crud post
+    @PostMapping("/crud/{url}")
+    public String create(
+            Model model,
+            @PathVariable("url") String url,
+            @RequestParam(value = "file") MultipartFile multipartFile) {
+
+        try {
+            // if file is empty or null
+            if (!multipartFile.isEmpty() || multipartFile != null) {
+                // switch option
+                url = url.toLowerCase();
+                switch (url) {
+                    case "create":
+                        // use multi threading
+                        new Thread(() -> {
+
+                            System.out.println(
+                                    String.format("Start upload file \"%s\" ...",
+                                            multipartFile.getOriginalFilename()));
+
+                            driveService.saveVideos(multipartFile);
+                            System.out.println(
+                                    String.format("Successfully upload \"%s\"",
+                                            multipartFile.getOriginalFilename()));
+                        }).start();
+                        break;
+
+                    default:
+                        break;
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return "redirect:/crud/" + url;
     }
 }

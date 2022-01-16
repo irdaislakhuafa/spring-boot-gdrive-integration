@@ -2,6 +2,10 @@ package com.irdaislakhuafa.dev.springbootgdriveintegration.services;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -13,6 +17,7 @@ import com.google.api.client.extensions.jetty.auth.oauth2.LocalServerReceiver;
 import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow;
 import com.google.api.client.googleapis.auth.oauth2.GoogleClientSecrets;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
+import com.google.api.client.http.FileContent;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.gson.GsonFactory;
@@ -21,11 +26,13 @@ import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.DriveScopes;
 import com.google.api.services.drive.model.File;
 import com.google.api.services.drive.model.FileList;
+import com.google.common.net.MediaType;
 import com.irdaislakhuafa.dev.springbootgdriveintegration.utils.GDriveComponent;
 
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 public class GoogleDriveService {
@@ -52,6 +59,8 @@ public class GoogleDriveService {
 
         // local server receiver port
         private static final Integer LOCAL_SERVER_PORT = 8888;
+
+        private static final String TEMP_FILE_PATH = System.getProperty("user.home") + "/.cache";
 
         public File createFolder(String name) {
                 try {
@@ -107,6 +116,59 @@ public class GoogleDriveService {
                 } catch (Exception e) {
                         e.printStackTrace();
                         return null;
+                }
+        }
+
+        // save videos
+        public boolean saveVideos(MultipartFile multipartFile) {
+                // instance temporary path for temp file
+                String tempPath = TEMP_FILE_PATH + "/irdhaislakhuafa@gmail.com/"
+                                + multipartFile.getOriginalFilename();
+                try {
+
+                        // set file path
+                        Path tempFilePath = Paths.get(tempPath);
+
+                        // get bytes of files
+                        byte[] tempFileBytes = multipartFile.getBytes();
+
+                        // write files to temporary storage
+                        Files.write(tempFilePath, tempFileBytes);
+
+                        // read file from temporary storage
+                        java.io.File tempFile = new java.io.File(tempPath);
+
+                        // configure file metadata
+                        File fileMetaData = new File();
+                        // set type of files
+                        fileMetaData.setMimeType(MediaType.ANY_VIDEO_TYPE.toString());
+                        // set name of files
+                        fileMetaData.setName(multipartFile.getOriginalFilename());
+
+                        // instance FileContent object
+                        FileContent fileContent = new FileContent(fileMetaData.getMimeType(), tempFile);
+
+                        // save or upload to google drive
+                        File resultFile = getDriveService()
+                                        .files()
+                                        .create(fileMetaData, fileContent)
+                                        .execute();
+
+                        // show log id
+                        System.err.println(resultFile.getId() + " -> " + multipartFile.getOriginalFilename());
+
+                        // delete temp file
+                        tempFile.delete();
+                        return true;
+                } catch (NoSuchFileException e) {
+                        // java.io.File temp = new java.io.File(tempPathr);
+                        System.out.println("File/Directory not found, i'll create it!");
+                        new java.io.File(tempPath.replace(multipartFile.getOriginalFilename(), "")).mkdirs();
+                        saveVideos(multipartFile);
+                        return true;
+                } catch (Exception e) {
+                        e.printStackTrace();
+                        return false;
                 }
         }
 

@@ -5,10 +5,16 @@
     <div th:replace="~{fragments/crud::banner('create')}"></div>
 
     <div class="col-sm-6 mx-auto">
-        <form th:action="@{'/crud/' + ${url}}" method="post">
+        <!-- <div th:if="${message != null}"> -->
+        <h2 th:text="${message}"></h2>
+        <!-- </div> -->
+
+        <form th:action="@{'/crud/' + ${url}}" method="post" enctype="multipart/form-data">
 
             <div class="mb-3">
-                <input type="file" class="form-control" name="file" id="file" placeholder="">
+                <label for="" class="form-label text-center st-case" th:text="${url}"> </label>
+                <input type="file" class="form-control" name="file" id="file" placeholder="Please select a file"
+                    required>
             </div>
 
             <div>

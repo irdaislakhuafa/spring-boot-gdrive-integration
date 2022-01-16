@@ -26,10 +26,13 @@ public class CardService {
                 new Card("service-1.svg", "Create", "You can create file in Google Drive using this option",
                         "/crud/create"));
         listCards.add(
-                new Card("service-3.svg", "Read", "You can read file in Google Drive using this option", "url"));
+                new Card("service-3.svg", "Read", "You can read file in Google Drive using this option",
+                        "/crud/read"));
         listCards.add(
-                new Card("service-2.svg", "Update", "You can update file in Google Drive using this option", "url"));
+                new Card("service-2.svg", "Update", "You can update file in Google Drive using this option",
+                        "/crud/update"));
         listCards.add(
-                new Card("service-3.svg", "Delete", "You can delete file in Google Drive using this option", "url"));
+                new Card("service-3.svg", "Delete", "You can delete file in Google Drive using this option",
+                        "/crud/delete"));
     }
 }
