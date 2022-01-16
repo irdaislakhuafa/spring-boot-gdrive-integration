@@ -6,7 +6,7 @@
 
     <!-- <div th:text="${listFiles}"></div> -->
     <!-- <div class="mx-auto"> -->
-    <table class="table table-striped table-responsive mx-auto">
+    <table class="table table-striped  mx-auto col-sm-8">
         <thead class="thead-inverse">
             <tr>
                 <th>ID</th>
@@ -17,13 +17,14 @@
         </thead>
         <tbody>
             <tr th:each="file, index : ${listFiles}">
-                <!-- <td scope="row"></td> -->
                 <td th:text="${index.index + 1}"></td>
-                <!-- <td th:text="${file.id}"></td> -->
                 <td th:text="${file.name}"></td>
                 <td th:text="${file.mimeType}"></td>
                 <td>
-                    <button type="button" class="btn btn-danger">Delete</button>
+                    <form th:action="@{/crud/delete}">
+                        <input type="text" name="id" id="id" required hidden th:value="${file.id}">
+                        <button type="submit" class="btn btn-danger">Delete</button>
+                    </form>
                 </td>
             </tr>
         </tbody>
