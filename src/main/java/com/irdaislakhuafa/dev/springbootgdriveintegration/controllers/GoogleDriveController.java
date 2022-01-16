@@ -24,8 +24,13 @@ public class GoogleDriveController {
 
     @GetMapping
     public String redirectToHome(Model mode) {
-        System.out.println(driveService.createFolder("irda"));
-        return "redirect:/home";
+        // if (driveService.findById("1JX8wizrfHPGZ_cUOed31TslAWLIDJImL") == null) {
+        // System.out.println(driveService.createFolder("irda"));
+        // } else {
+        // System.out.println(driveService.findById("1JX8wizrfHPGZ_cUOed31TslAWLIDJImL"));
+        // }
+        System.err.println(driveService.findByName("irda"));
+        return "index";
     }
 
     @GetMapping("/home")

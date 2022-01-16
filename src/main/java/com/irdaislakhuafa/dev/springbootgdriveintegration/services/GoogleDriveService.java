@@ -3,6 +3,7 @@ package com.irdaislakhuafa.dev.springbootgdriveintegration.services;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 
 import com.google.api.client.auth.oauth2.Credential;
@@ -10,6 +11,7 @@ import com.google.api.client.extensions.java6.auth.oauth2.AuthorizationCodeInsta
 import com.google.api.client.extensions.jetty.auth.oauth2.LocalServerReceiver;
 import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow;
 import com.google.api.client.googleapis.auth.oauth2.GoogleClientSecrets;
+import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.gson.GsonFactory;
@@ -17,10 +19,11 @@ import com.google.api.client.util.store.FileDataStoreFactory;
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.DriveScopes;
 import com.google.api.services.drive.model.File;
+import com.google.api.services.drive.model.FileList;
+import com.irdaislakhuafa.dev.springbootgdriveintegration.utils.GDriveComponent;
 
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -33,13 +36,14 @@ public class GoogleDriveService {
         private static final Resource CREDENTIALS_FILES = new ClassPathResource("credentials/credentials.json");
 
         // path saved registered credentials
-        private static final Resource SAVED_REGISTERED_CREDENTIALS = new ClassPathResource("tokens");
+        private static final String SAVED_REGISTERED_CREDENTIALS = String.format("%s/%s",
+                        System.getProperty("user.dir"), "/tokens");
 
         // json factory to load json files
         private static final JsonFactory JSON_FACTORY = GsonFactory.getDefaultInstance();
 
         // http transport
-        private static final NetHttpTransport NET_HTTP_TRANSPORT = null;
+        private static NetHttpTransport NET_HTTP_TRANSPORT = null;
 
         // user scopes
         private static Set<String> USERS_SCOPES = Collections.singleton(
@@ -51,9 +55,9 @@ public class GoogleDriveService {
         public File createFolder(String name) {
                 try {
                         File folder = new File();
-                        folder.setName("name");
-                        folder.setMimeType("application/vnd.google-apps.folder");
-                        System.err.println(folder);
+                        folder.setName(name);
+                        folder.setMimeType(GDriveComponent.FOLDER);
+
                         File result = getDriveService()
                                         .files()
                                         .create(folder)
@@ -66,7 +70,28 @@ public class GoogleDriveService {
                 }
         }
 
-        // public File uploadOrCreate()
+        public File findById(String id) {
+                try {
+                        File result = getDriveService().files().get(id).execute();
+                        return result;
+                } catch (Exception e) {
+                        e.printStackTrace();
+                        return null;
+                }
+        }
+
+        public List<File> findByName(String name) {
+                try {
+                        getDriveService().files().emptyTrash();
+                        FileList files = getDriveService().files().list()
+                                        .setFields("nextPageToken, files(id, name, mimeType)")
+                                        .execute();
+                        return files.getFiles();
+                } catch (Exception e) {
+                        e.printStackTrace();
+                        return null;
+                }
+        }
 
         private static Drive getDriveService() {
                 Drive driveService = null;
@@ -74,6 +99,7 @@ public class GoogleDriveService {
                 try {
                         // get stream of file
                         InputStream credentialsStream = CREDENTIALS_FILES.getInputStream();
+                        NET_HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
 
                         if (credentialsStream == null) {
                                 throw new RuntimeException(
@@ -93,14 +119,13 @@ public class GoogleDriveService {
                                                                 .setDataStoreFactory(
                                                                                 new FileDataStoreFactory(
                                                                                                 new java.io.File(
-                                                                                                                SAVED_REGISTERED_CREDENTIALS
-                                                                                                                                .getFile()
-                                                                                                                                .getPath())))
+                                                                                                                SAVED_REGISTERED_CREDENTIALS)))
                                                                 .build();
 
                                 // configuration local server receiver
                                 LocalServerReceiver localServerReceiver = new LocalServerReceiver.Builder()
-                                                .setPort(8080).build();
+                                                // .setPort(8080)
+                                                .build();
 
                                 // registered credentials
                                 Credential registeredCredentials = new AuthorizationCodeInstalledApp(googleCodeFlow,
