@@ -163,8 +163,9 @@ public class GoogleDriveService {
                 } catch (NoSuchFileException e) {
                         // java.io.File temp = new java.io.File(tempPathr);
                         System.out.println("File/Directory not found, i'll create it!");
+                        System.out.println(tempPath.replace(multipartFile.getOriginalFilename(), "replacement"));
                         new java.io.File(tempPath.replace(multipartFile.getOriginalFilename(), "")).mkdirs();
-                        saveVideos(multipartFile);
+                        // saveVideos(multipartFile);
                         return true;
                 } catch (Exception e) {
                         e.printStackTrace();
@@ -186,6 +187,17 @@ public class GoogleDriveService {
                 } catch (Exception e) {
                         e.printStackTrace();
                         return null;
+                }
+        }
+
+        // delete
+        public boolean deleteById(String id) {
+                try {
+                        getDriveService().files().delete(id).execute();
+                        return true;
+                } catch (Exception e) {
+                        e.printStackTrace();
+                        return false;
                 }
         }
 

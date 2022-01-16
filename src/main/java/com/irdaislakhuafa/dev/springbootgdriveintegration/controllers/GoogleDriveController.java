@@ -42,7 +42,7 @@ public class GoogleDriveController {
     @GetMapping("/crud/{url}")
     public String create(Model model, @PathVariable("url") String url) {
         model.addAttribute("url", url);
-        System.out.println(driveService.listFiles(10, null));
+        // System.out.println(driveService.listFiles(10, null));
 
         if (url.equalsIgnoreCase("read")) {
             FileList list = driveService.listFiles(10, null);
@@ -57,38 +57,46 @@ public class GoogleDriveController {
     public String create(
             Model model,
             @PathVariable("url") String url,
-            @RequestParam(value = "file") MultipartFile multipartFile) {
+            @RequestParam(value = "file", required = false) MultipartFile multipartFile,
+            @RequestParam(value = "idDeleted", required = false) String id) {
 
         try {
+            System.out.println(id);
             // if file is empty or null
-            if (!multipartFile.isEmpty() || multipartFile != null) {
-                // switch option
-                url = url.toLowerCase();
+            // if (!multipartFile.isEmpty() || multipartFile != null || id != null) {
+            // switch option
+            url = url.toLowerCase();
 
-                switch (url) {
-                    case "create":
-                        // use multi threading
-                        new Thread(() -> {
+            switch (url) {
+                case "create":
+                    // use multi threading
+                    new Thread(() -> {
 
-                            System.out.println(
-                                    String.format("Start upload file \"%s\" ...",
-                                            multipartFile.getOriginalFilename()));
+                        System.out.println(
+                                String.format("Start upload file \"%s\" ...",
+                                        multipartFile.getOriginalFilename()));
 
-                            driveService.saveVideos(multipartFile);
-                            System.out.println(
-                                    String.format("Successfully upload \"%s\"",
-                                            multipartFile.getOriginalFilename()));
-                        }).start();
-                        break;
+                        driveService.saveVideos(multipartFile);
+                        System.out.println(
+                                String.format("Successfully upload \"%s\"",
+                                        multipartFile.getOriginalFilename()));
+                    }).start();
+                    break;
 
-                    case "read":
-                        FileList list = driveService.listFiles(10, null);
-                        System.out.println(list);
-                        break;
-                    default:
-                        break;
-                }
+                case "read":
+                    FileList list = driveService.listFiles(100000, null);
+                    break;
+                case "update":
+                    break;
+                case "delete":
+                    driveService.deleteById(id);
+                    System.out.println(String.format("Success deleted \"%s\"", id));
+                    return "redirect:/crud/read";
+                // break;
+                default:
+                    break;
             }
+            // }
         } catch (Exception e) {
             e.printStackTrace();
         }
