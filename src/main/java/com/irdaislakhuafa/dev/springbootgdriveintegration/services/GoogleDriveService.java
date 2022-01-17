@@ -181,7 +181,8 @@ public class GoogleDriveService {
                                         .files()
                                         .list()
                                         .setPageSize(size)
-                                        .setPageToken((result != null) ? result.getNextPageToken() : null)
+                                        .setPageToken((result != null) ? result.getNextPageToken()
+                                                        : null)
                                         .execute();
                         return result;
                 } catch (Exception e) {
@@ -197,6 +198,20 @@ public class GoogleDriveService {
                         return true;
                 } catch (Exception e) {
                         e.printStackTrace();
+                        return false;
+                }
+        }
+
+        // update
+        public boolean update(String id, File newFile) {
+                try {
+                        File result = getDriveService()
+                                        .files()
+                                        .update(id, newFile)
+                                        .execute();
+                        System.out.println("Update : " + result);
+                        return true;
+                } catch (Exception e) {
                         return false;
                 }
         }

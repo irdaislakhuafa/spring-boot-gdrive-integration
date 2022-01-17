@@ -1,5 +1,7 @@
 package com.irdaislakhuafa.dev.springbootgdriveintegration.controllers;
 
+import com.google.api.services.drive.model.File;
+import com.google.api.services.drive.model.FileList;
 import com.irdaislakhuafa.dev.springbootgdriveintegration.services.CardService;
 import com.irdaislakhuafa.dev.springbootgdriveintegration.services.GoogleDriveService;
 
@@ -12,7 +14,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
-import com.google.api.services.drive.model.FileList;
 
 @Controller
 @RequestMapping("/")
@@ -58,7 +59,9 @@ public class GoogleDriveController {
             Model model,
             @PathVariable("url") String url,
             @RequestParam(value = "file", required = false) MultipartFile multipartFile,
-            @RequestParam(value = "idDeleted", required = false) String id) {
+            @RequestParam(value = "idDeleted", required = false) String id,
+            @RequestParam(value = "idUpdate", required = false) String idUpdate,
+            @RequestParam(value = "newFileName", required = false) String newFileName) {
 
         try {
             System.out.println(id);
@@ -87,6 +90,15 @@ public class GoogleDriveController {
                     FileList list = driveService.listFiles(100000, null);
                     break;
                 case "update":
+                    File tempFile = new File();
+                    tempFile.setName(newFileName);
+                    // // tempFile.setFileExtension("fileExtension");
+
+                    // FileContent newFile = new FileContent(MediaType.ANY_VIDEO_TYPE.toString(),
+                    // new java.io.File(idUpdate));
+
+                    Boolean result = driveService.update(idUpdate, tempFile);
+                    // System.out.println(driveService.findById("1J3kadVPXMZYrDA2m3wAkRJ_Cz0w2oeyh"));
                     break;
                 case "delete":
                     driveService.deleteById(id);
