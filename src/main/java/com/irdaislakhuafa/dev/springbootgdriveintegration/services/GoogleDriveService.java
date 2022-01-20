@@ -1,5 +1,6 @@
 package com.irdaislakhuafa.dev.springbootgdriveintegration.services;
 
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
@@ -151,4 +152,8 @@ public class GoogleDriveService extends GoogleService {
         }
     }
 
+    // delete by id
+    public void deleteById(String id) throws IOException {
+        GoogleService.getDriveService().files().delete(id).execute();
+    }
 }

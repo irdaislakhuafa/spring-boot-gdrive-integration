@@ -54,6 +54,7 @@ public class GoogleDriveController {
     // return "crud/" + url;
     // }
 
+    // read
     @GetMapping("/crud/read")
     public String read(Model model) {
         try {
@@ -66,47 +67,62 @@ public class GoogleDriveController {
         return "crud/read";
     }
 
-    // crud post
-    @PostMapping("/crud/{url}")
-    public String create(
-            Model model,
-            @PathVariable("url") String url,
-            @RequestParam(value = "file") MultipartFile multipartFile) {
-
+    // POST delete
+    @PostMapping("/crud/delete")
+    public String delete(Model model, @RequestParam("id") String fileID) {
         try {
-            // if file is empty or null
-            if (!multipartFile.isEmpty() || multipartFile != null) {
-                // switch option
-                url = url.toLowerCase();
-
-                switch (url) {
-                    case "create":
-                        // use multi threading
-                        new Thread(() -> {
-
-                            System.out.println(
-                                    String.format("Start upload file \"%s\" ...",
-                                            multipartFile.getOriginalFilename()));
-
-                            driveService.saveVideos(multipartFile);
-                            System.out.println(
-                                    String.format("Successfully upload \"%s\"",
-                                            multipartFile.getOriginalFilename()));
-                        }).start();
-                        break;
-
-                    case "read":
-                        FileList list = driveService.listFiles(10, null);
-                        System.out.println(list);
-                        break;
-                    default:
-                        break;
-                }
-            }
+            driveService.deleteById(fileID);
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-        return "redirect:/crud/" + url;
+        return "redirect:/crud/read";
     }
+
+    // crud post
+    /*
+     * @PostMapping("/crud/{url}")
+     * public String create(
+     * Model model,
+     * 
+     * @PathVariable("url") String url,
+     * 
+     * @RequestParam(value = "file") MultipartFile multipartFile) {
+     * 
+     * try {
+     * // if file is empty or null
+     * if (!multipartFile.isEmpty() || multipartFile != null) {
+     * // switch option
+     * url = url.toLowerCase();
+     * 
+     * switch (url) {
+     * case "create":
+     * // use multi threading
+     * new Thread(() -> {
+     * 
+     * System.out.println(
+     * String.format("Start upload file \"%s\" ...",
+     * multipartFile.getOriginalFilename()));
+     * 
+     * driveService.saveVideos(multipartFile);
+     * System.out.println(
+     * String.format("Successfully upload \"%s\"",
+     * multipartFile.getOriginalFilename()));
+     * }).start();
+     * break;
+     * 
+     * case "read":
+     * FileList list = driveService.listFiles(10, null);
+     * System.out.println(list);
+     * break;
+     * default:
+     * break;
+     * }
+     * }
+     * } catch (Exception e) {
+     * e.printStackTrace();
+     * }
+     * 
+     * return "redirect:/crud/" + url;
+     * }
+     */
 }

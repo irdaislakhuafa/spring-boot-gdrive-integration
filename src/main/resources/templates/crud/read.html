@@ -24,7 +24,7 @@
                 <!-- buttons -->
                 <td>
                     <!-- delete -->
-                    <form th:action="@{/crud/delete}">
+                    <form th:action="@{/crud/delete}" method="post">
                         <input type="text" name="id" id="id" required hidden th:value="${file.id}">
                         <button type="submit" class="btn btn-danger">Delete</button>
                     </form>
