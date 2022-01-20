@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.google.api.client.http.FileContent;
+import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.model.File;
 import com.google.api.services.drive.model.FileList;
 import com.irdaislakhuafa.dev.springbootgdriveintegration.utils.GDriveComponent;
@@ -162,5 +163,10 @@ public class GoogleDriveService extends GoogleService {
     public File update(String fileID, File newContent) throws IOException {
         File result = GoogleService.getDriveService().files().update(fileID, newContent).execute();
         return result;
+    }
+
+    // get files
+    public Drive.Files name() {
+        return getDriveService().files();
     }
 }
