@@ -76,16 +76,17 @@ public class GoogleDriveService extends GoogleService {
                         .execute();
 
                 // show log id
-                System.err.printf("Created file with NAME : \"%s\" with ID : \"%s\"",
+                System.err.printf("Created file with NAME : \"%s\" with ID : \"%s\"\n",
                         multipartFile.getOriginalFilename(), resultFile.getId());
 
                 // delete temp file
                 tempFile.delete();
                 return true;
             } catch (NoSuchFileException e) {
-                // java.io.File temp = new java.io.File(tempPathr);
                 System.out.printf("File/Directory not found, i'll create \"%s\"\n", tempPath);
-                new java.io.File(tempPath).mkdirs();
+                new Thread(() -> {
+                    new java.io.File(tempPath).mkdirs();
+                }).start();
             } catch (Exception e) {
                 e.printStackTrace();
                 return false;
@@ -155,5 +156,11 @@ public class GoogleDriveService extends GoogleService {
     // delete by id
     public void deleteById(String id) throws IOException {
         GoogleService.getDriveService().files().delete(id).execute();
+    }
+
+    // update file
+    public File update(String fileID, File newContent) throws IOException {
+        File result = GoogleService.getDriveService().files().update(fileID, newContent).execute();
+        return result;
     }
 }

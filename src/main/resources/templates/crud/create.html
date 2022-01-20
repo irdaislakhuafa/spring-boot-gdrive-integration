@@ -1,30 +1,39 @@
-<div th:replace="~{fragments/get::head}"></div>
-<div th:replace="~{fragments/get::header}"></div>
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
 
-<div class="container">
-    <div th:replace="~{fragments/crud::banner(${mode})}"></div>
+<head>
+    <div th:replace="~{fragments/get::head}"></div>
+</head>
 
-    <div class="col-sm-6 mx-auto">
-        <!-- <div th:if="${message != null}"> -->
-        <!-- <h2 th:text="${message}"></h2> -->
-        <!-- </div> -->
+<body>
+    <div th:replace="~{fragments/get::header}"></div>
 
-        <form th:action="@{'/crud/' + ${mode}}" method="post" enctype="multipart/form-data">
+    <div class="container">
+        <div th:replace="~{fragments/crud::banner(${mode})}"></div>
 
-            <div class="mb-3">
-                <label for="" class="form-label text-center st-case" th:text="${mode}"> </label>
-                <input type="file" class="form-control" name="file" id="file" placeholder="Please select a file"
-                    required>
-            </div>
+        <div class="col-sm-6 mx-auto">
+            <!-- <div th:if="${message != null}"> -->
+            <!-- <h2 th:text="${message}"></h2> -->
+            <!-- </div> -->
 
-            <div>
-                <a th:href="@{/home}" class="btn btn-outline-primary bg-gradient">Back</a>
-                <button type="submit" th:text="${mode}" class="btn btn-primary mx-auto st-case"></button>
-            </div>
-        </form>
+            <form th:action="@{'/crud/' + ${mode}}" method="post" enctype="multipart/form-data">
+
+                <div class="mb-3">
+                    <label for="" class="form-label text-center st-case" th:text="${mode}"> </label>
+                    <input type="file" class="form-control" name="file" id="file" placeholder="Please select a file"
+                        required>
+                </div>
+
+                <div>
+                    <a th:href="@{/home}" class="btn btn-outline-primary bg-gradient">Back</a>
+                    <button type="submit" th:text="${mode}" class="btn btn-primary mx-auto st-case"></button>
+                </div>
+            </form>
+        </div>
     </div>
-</div>
 
+    <div th:replace="~{fragments/get::footer}"></div>
+    <div th:replace="~{fragments/get::js}"></div>
+</body>
 
-<div th:replace="~{fragments/get::footer}"></div>
-<div th:replace="~{fragments/get::js}"></div>
+</html>

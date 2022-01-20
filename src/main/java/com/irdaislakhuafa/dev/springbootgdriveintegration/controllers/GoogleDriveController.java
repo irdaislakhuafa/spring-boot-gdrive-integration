@@ -1,6 +1,6 @@
 package com.irdaislakhuafa.dev.springbootgdriveintegration.controllers;
 
-import com.google.api.services.drive.model.FileList;
+import com.google.api.services.drive.model.File;
 import com.irdaislakhuafa.dev.springbootgdriveintegration.services.CardService;
 import com.irdaislakhuafa.dev.springbootgdriveintegration.services.GoogleDriveService;
 
@@ -8,11 +8,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.servlet.view.RedirectView;
 
 @Controller
 @RequestMapping("/")
@@ -40,20 +41,6 @@ public class GoogleDriveController {
         return "index";
     }
 
-    // crud get
-    // @GetMapping("/crud/{url}")
-    // public String create(Model model, @PathVariable("url") String url) {
-    // model.addAttribute("url", url);
-    // System.out.println(driveService.listFiles(10, null));
-
-    // if (url.equalsIgnoreCase("read")) {
-    // FileList list = driveService.listFiles(10, null);
-    // model.addAttribute("listFiles", list.getFiles());
-    // }
-
-    // return "crud/" + url;
-    // }
-
     // GET read
     @GetMapping("/crud/read")
     public String read(Model model) {
@@ -65,6 +52,24 @@ public class GoogleDriveController {
             e.printStackTrace();
         }
         return "crud/read";
+    }
+
+    // POST read/update
+    @PostMapping("/crud/read/update")
+    public RedirectView readUpdate(Model model,
+            RedirectAttributes redirectAttributes,
+            @RequestParam("fileID") String fileID) {
+
+        try {
+            File searchResult = driveService.findById(fileID);
+            redirectAttributes.addFlashAttribute("fileID", searchResult.getId());
+            redirectAttributes.addFlashAttribute("name", searchResult.getName());
+            redirectAttributes.addFlashAttribute("desc", searchResult.getDescription());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        // return "redirect:/crud/update";
+        return new RedirectView("/crud/update", true);
     }
 
     // POST delete
@@ -104,51 +109,58 @@ public class GoogleDriveController {
         return "redirect:/crud/create";
     }
 
-    // crud post
-    /*
-     * @PostMapping("/crud/{url}")
-     * public String create(
-     * Model model,
-     * 
-     * @PathVariable("url") String url,
-     * 
-     * @RequestParam(value = "file") MultipartFile multipartFile) {
-     * 
-     * try {
-     * // if file is empty or null
-     * if (!multipartFile.isEmpty() || multipartFile != null) {
-     * // switch option
-     * url = url.toLowerCase();
-     * 
-     * switch (url) {
-     * case "create":
-     * // use multi threading
-     * new Thread(() -> {
-     * 
-     * System.out.println(
-     * String.format("Start upload file \"%s\" ...",
-     * multipartFile.getOriginalFilename()));
-     * 
-     * driveService.saveVideos(multipartFile);
-     * System.out.println(
-     * String.format("Successfully upload \"%s\"",
-     * multipartFile.getOriginalFilename()));
-     * }).start();
-     * break;
-     * 
-     * case "read":
-     * FileList list = driveService.listFiles(10, null);
-     * System.out.println(list);
-     * break;
-     * default:
-     * break;
-     * }
-     * }
-     * } catch (Exception e) {
-     * e.printStackTrace();
-     * }
-     * 
-     * return "redirect:/crud/" + url;
-     * }
-     */
+    // POST update
+    @PostMapping("/crud/update")
+    public String update(Model model,
+            @RequestParam(value = "fileID") String fileID,
+            @RequestParam(value = "newName") String newName,
+            @RequestParam(value = "desc") String desc) {
+
+        try {
+            File newContent = new File();
+            newContent.setName(newName);
+            newContent.setDescription(desc);
+            driveService.update(fileID, newContent);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return "redirect:/crud/update";
+    }
+
+    // GET update
+    @GetMapping("/crud/update")
+    public String update(Model model, @RequestParam(value = "fileID", required = false) String fileID) {
+        try {
+            if (fileID.isEmpty() || fileID.isBlank() || fileID == null) {
+                try {
+                    File fileSearch = driveService.findById(fileID);
+                    System.out.println(fileSearch);
+                    model.addAttribute("fileID", fileSearch.getId());
+                    model.addAttribute("name", fileSearch.getName());
+                    model.addAttribute("desc", fileSearch.getDescription());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+
+            model.addAttribute("title", APP_TITLE);
+            model.addAttribute("mode", "update");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return "crud/update";
+    }
+
+    // GET delete
+    @GetMapping("/crud/delete")
+    public String delete(Model model) {
+        try {
+            model.addAttribute("title", APP_TITLE);
+            model.addAttribute("mode", "delete");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return "crud/delete";
+    }
+
 }

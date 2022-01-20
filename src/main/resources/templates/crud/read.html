@@ -1,40 +1,60 @@
-<div th:replace="~{fragments/get::head}"></div>
-<div th:replace="~{fragments/get::header}"></div>
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
 
-<div class="container">
-    <div th:replace="~{fragments/crud::banner(${mode})}"></div>
+<head>
+    <div th:replace="~{fragments/get::head}"></div>
+</head>
 
-    <!-- <div th:text="${listFiles}"></div> -->
-    <!-- <div class="mx-auto"> -->
-    <table class="table table-striped  mx-auto">
-        <thead class="thead-inverse">
-            <tr>
-                <th>NO</th>
-                <th>NAME</th>
-                <th>TYPE</th>
-                <th>ACTION</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr th:each="file, index : ${listFiles}">
-                <td th:text="${index.index + 1}"></td>
-                <td th:text="${file.name}"></td>
-                <td th:text="${file.mimeType}"></td>
+<body>
+    <div th:replace="~{fragments/get::header}"></div>
 
-                <!-- buttons -->
-                <td>
-                    <!-- delete -->
-                    <form th:action="@{/crud/delete}" method="post">
-                        <input type="text" name="id" id="id" required hidden th:value="${file.id}">
-                        <button type="submit" class="btn btn-danger">Delete</button>
-                    </form>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <!-- </div> -->
+    <div class="container">
+        <div th:replace="~{fragments/crud::banner(${mode})}"></div>
 
-</div>
+        <div th:text="${listFiles}"></div>
 
-<div th:replace="~{fragments/get::footer}"></div>
-<div th:replace="~{fragments/get::js}"></div>
+        <!-- back -->
+        <a th:href="@{/home}" class="btn btn-outline-primary mb-3">Back</a>
+
+        <!-- <div class="mx-auto"> -->
+        <table class="table table-striped  mx-auto">
+            <thead class="thead-inverse">
+                <tr>
+                    <th>NO</th>
+                    <th>NAME</th>
+                    <th>TYPE</th>
+                    <th>ACTION</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="file, index : ${listFiles}">
+                    <td th:text="${index.index + 1}"></td>
+                    <td th:text="${file.name}"></td>
+                    <td th:text="${file.mimeType}"></td>
+
+                    <!-- buttons -->
+                    <td>
+                        <!-- update -->
+                        <form th:action="@{/crud/read/update}" method="post" class="mb-3">
+                            <input type="text" required hidden th:value="${file.id}" name="fileID">
+                            <button type="submit" class="btn btn-primary">Edit</button>
+                        </form>
+
+                        <!-- delete -->
+                        <form th:action="@{/crud/delete}" method="post">
+                            <input type="text" name="id" id="id" required hidden th:value="${file.id}">
+                            <button type="submit" class="btn btn-danger">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <!-- </div> -->
+
+    </div>
+
+    <div th:replace="~{fragments/get::footer}"></div>
+    <div th:replace="~{fragments/get::js}"></div>
+</body>
+
+</html>
