@@ -54,7 +54,7 @@ public class GoogleDriveController {
     // return "crud/" + url;
     // }
 
-    // read
+    // GET read
     @GetMapping("/crud/read")
     public String read(Model model) {
         try {
@@ -76,6 +76,32 @@ public class GoogleDriveController {
             e.printStackTrace();
         }
         return "redirect:/crud/read";
+    }
+
+    // GET create
+    @GetMapping("/crud/create")
+    public String create(Model model) {
+        try {
+            model.addAttribute("title", APP_TITLE);
+            model.addAttribute("mode", "create");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return "crud/create";
+    }
+
+    // POST create
+    @PostMapping("/crud/create")
+    public String create(Model model, @RequestParam("file") MultipartFile multipartFile) {
+        // using multithread
+        new Thread(() -> {
+            try {
+                driveService.save(multipartFile);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }).start();
+        return "redirect:/crud/create";
     }
 
     // crud post

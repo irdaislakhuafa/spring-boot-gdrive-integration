@@ -11,7 +11,6 @@ import java.util.List;
 import com.google.api.client.http.FileContent;
 import com.google.api.services.drive.model.File;
 import com.google.api.services.drive.model.FileList;
-import com.google.common.net.MediaType;
 import com.irdaislakhuafa.dev.springbootgdriveintegration.utils.GDriveComponent;
 
 import org.springframework.stereotype.Service;
@@ -38,7 +37,7 @@ public class GoogleDriveService extends GoogleService {
     }
 
     // save videos
-    public boolean saveVideos(MultipartFile multipartFile) {
+    public boolean save(MultipartFile multipartFile) {
         // get file name
         String tempFileName = multipartFile.getOriginalFilename();
 
@@ -58,12 +57,12 @@ public class GoogleDriveService extends GoogleService {
                 Files.write(tempFilePath, tempFileBytes);
 
                 // read file from temporary storage
-                java.io.File tempFile = new java.io.File(tempPath);
+                java.io.File tempFile = new java.io.File(tempPath + tempFileName);
 
                 // configure file metadata
                 File fileMetaData = new File();
                 // set type of files
-                fileMetaData.setMimeType(MediaType.ANY_VIDEO_TYPE.toString());
+                fileMetaData.setMimeType(multipartFile.getContentType());
                 // set name of files
                 fileMetaData.setName(multipartFile.getOriginalFilename());
 
@@ -77,7 +76,8 @@ public class GoogleDriveService extends GoogleService {
                         .execute();
 
                 // show log id
-                System.err.println(resultFile.getId() + " -> " + multipartFile.getOriginalFilename());
+                System.err.printf("Created file with NAME : \"%s\" with ID : \"%s\"",
+                        multipartFile.getOriginalFilename(), resultFile.getId());
 
                 // delete temp file
                 tempFile.delete();

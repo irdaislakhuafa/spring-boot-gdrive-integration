@@ -2,23 +2,24 @@
 <div th:replace="~{fragments/get::header}"></div>
 
 <div class="container">
-    <div th:replace="~{fragments/crud::banner('create')}"></div>
+    <div th:replace="~{fragments/crud::banner(${mode})}"></div>
 
     <div class="col-sm-6 mx-auto">
         <!-- <div th:if="${message != null}"> -->
-        <h2 th:text="${message}"></h2>
+        <!-- <h2 th:text="${message}"></h2> -->
         <!-- </div> -->
 
-        <form th:action="@{'/crud/' + ${url}}" method="post" enctype="multipart/form-data">
+        <form th:action="@{'/crud/' + ${mode}}" method="post" enctype="multipart/form-data">
 
             <div class="mb-3">
-                <label for="" class="form-label text-center st-case" th:text="${url}"> </label>
+                <label for="" class="form-label text-center st-case" th:text="${mode}"> </label>
                 <input type="file" class="form-control" name="file" id="file" placeholder="Please select a file"
                     required>
             </div>
 
             <div>
-                <button type="submit" th:text="${url}" class="btn btn-primary mx-auto st-case"></button>
+                <a th:href="@{/home}" class="btn btn-outline-primary bg-gradient">Back</a>
+                <button type="submit" th:text="${mode}" class="btn btn-primary mx-auto st-case"></button>
             </div>
         </form>
     </div>
