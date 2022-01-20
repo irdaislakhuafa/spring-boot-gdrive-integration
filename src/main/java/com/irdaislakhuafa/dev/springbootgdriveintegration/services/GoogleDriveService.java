@@ -169,4 +169,9 @@ public class GoogleDriveService extends GoogleService {
     public Drive.Files name() {
         return getDriveService().files();
     }
+
+    // get public url
+    public String getUrlById(String id) {
+        return "https://drive.google.com/uc?export=download&id=" + id;
+    }
 }
