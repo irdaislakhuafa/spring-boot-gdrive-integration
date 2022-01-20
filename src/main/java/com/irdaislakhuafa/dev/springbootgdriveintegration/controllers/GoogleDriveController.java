@@ -1,5 +1,6 @@
 package com.irdaislakhuafa.dev.springbootgdriveintegration.controllers;
 
+import com.google.api.services.drive.model.FileList;
 import com.irdaislakhuafa.dev.springbootgdriveintegration.services.CardService;
 import com.irdaislakhuafa.dev.springbootgdriveintegration.services.GoogleDriveService;
 
@@ -12,13 +13,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
-import com.google.api.services.drive.model.FileList;
 
 @Controller
 @RequestMapping("/")
 public class GoogleDriveController {
 
     private static final String MY_NAME = "Irda Islakhu Afa";
+
+    private static final String APP_TITLE = "Simple Google Drive CRUD | " + MY_NAME;
 
     @Autowired
     private CardService cardService;
@@ -39,17 +41,29 @@ public class GoogleDriveController {
     }
 
     // crud get
-    @GetMapping("/crud/{url}")
-    public String create(Model model, @PathVariable("url") String url) {
-        model.addAttribute("url", url);
-        System.out.println(driveService.listFiles(10, null));
+    // @GetMapping("/crud/{url}")
+    // public String create(Model model, @PathVariable("url") String url) {
+    // model.addAttribute("url", url);
+    // System.out.println(driveService.listFiles(10, null));
 
-        if (url.equalsIgnoreCase("read")) {
-            FileList list = driveService.listFiles(10, null);
-            model.addAttribute("listFiles", list.getFiles());
+    // if (url.equalsIgnoreCase("read")) {
+    // FileList list = driveService.listFiles(10, null);
+    // model.addAttribute("listFiles", list.getFiles());
+    // }
+
+    // return "crud/" + url;
+    // }
+
+    @GetMapping("/crud/read")
+    public String read(Model model) {
+        try {
+            model.addAttribute("title", APP_TITLE);
+            model.addAttribute("mode", "read");
+            model.addAttribute("listFiles", driveService.listFiles(1000, null).getFiles());
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-
-        return "crud/" + url;
+        return "crud/read";
     }
 
     // crud post

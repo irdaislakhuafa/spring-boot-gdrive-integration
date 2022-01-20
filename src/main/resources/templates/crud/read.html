@@ -2,14 +2,14 @@
 <div th:replace="~{fragments/get::header}"></div>
 
 <div class="container">
-    <div th:replace="~{fragments/crud::banner(${url})}"></div>
+    <div th:replace="~{fragments/crud::banner(${mode})}"></div>
 
     <!-- <div th:text="${listFiles}"></div> -->
     <!-- <div class="mx-auto"> -->
-    <table class="table table-striped  mx-auto col-sm-8">
+    <table class="table table-striped  mx-auto">
         <thead class="thead-inverse">
             <tr>
-                <th>ID</th>
+                <th>NO</th>
                 <th>NAME</th>
                 <th>TYPE</th>
                 <th>ACTION</th>
@@ -20,7 +20,10 @@
                 <td th:text="${index.index + 1}"></td>
                 <td th:text="${file.name}"></td>
                 <td th:text="${file.mimeType}"></td>
+
+                <!-- buttons -->
                 <td>
+                    <!-- delete -->
                     <form th:action="@{/crud/delete}">
                         <input type="text" name="id" id="id" required hidden th:value="${file.id}">
                         <button type="submit" class="btn btn-danger">Delete</button>
