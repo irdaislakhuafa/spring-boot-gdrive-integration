@@ -38,7 +38,7 @@ public class GoogleDriveService extends GoogleService {
     }
 
     // save videos
-    public boolean save(MultipartFile multipartFile) {
+    public boolean save(MultipartFile multipartFile) throws Exception {
         // get file name
         String tempFileName = multipartFile.getOriginalFilename();
 
@@ -46,52 +46,57 @@ public class GoogleDriveService extends GoogleService {
         String tempPath = TEMP_FILE_PATH + "/irdhaislakhuafa@gmail.com/";
         while (true) {
 
-            try {
+            // try {
 
-                // set file path
-                Path tempFilePath = Paths.get(tempPath + tempFileName);
+            // set file path
+            Path tempFilePath = Paths.get(tempPath + tempFileName);
 
-                // get bytes of files
-                byte[] tempFileBytes = multipartFile.getBytes();
+            // get bytes of files
+            byte[] tempFileBytes = multipartFile.getBytes();
 
-                // write files to temporary storage
-                Files.write(tempFilePath, tempFileBytes);
+            // write files to temporary storage
+            Files.write(tempFilePath, tempFileBytes);
 
-                // read file from temporary storage
-                java.io.File tempFile = new java.io.File(tempPath + tempFileName);
-
-                // configure file metadata
-                File fileMetaData = new File();
-                // set type of files
-                fileMetaData.setMimeType(multipartFile.getContentType());
-                // set name of files
-                fileMetaData.setName(multipartFile.getOriginalFilename());
-
-                // instance FileContent object
-                FileContent fileContent = new FileContent(fileMetaData.getMimeType(), tempFile);
-
-                // save or upload to google drive
-                File resultFile = getDriveService()
-                        .files()
-                        .create(fileMetaData, fileContent)
-                        .execute();
-
-                // show log id
-                System.err.printf("Created file with NAME : \"%s\" with ID : \"%s\"\n",
-                        multipartFile.getOriginalFilename(), resultFile.getId());
-
-                // delete temp file
-                tempFile.delete();
-                return true;
-            } catch (NoSuchFileException e) {
-                System.out.printf("File/Directory not found, i'll create \"%s\"\n", tempPath);
-                new Thread(() -> {
-                    new java.io.File(tempPath).mkdirs();
-                }).start();
-            } catch (Exception e) {
-                e.printStackTrace();
-                return false;
+            if (!new java.io.File(tempPath).exists()) {
+                new java.io.File(tempPath).mkdirs();
             }
+
+            // read file from temporary storage
+            java.io.File tempFile = new java.io.File(tempPath + tempFileName);
+
+            // configure file metadata
+            File fileMetaData = new File();
+            // set type of files
+            fileMetaData.setMimeType(multipartFile.getContentType());
+            // set name of files
+            fileMetaData.setName(multipartFile.getOriginalFilename());
+
+            // instance FileContent object
+            FileContent fileContent = new FileContent(fileMetaData.getMimeType(), tempFile);
+
+            // save or upload to google drive
+            File resultFile = getDriveService()
+                    .files()
+                    .create(fileMetaData, fileContent)
+                    .execute();
+
+            // show log id
+            System.err.printf("Created file with NAME : \"%s\" with ID : \"%s\"\n",
+                    multipartFile.getOriginalFilename(), resultFile.getId());
+
+            // delete temp file
+            tempFile.delete();
+            return true;
+            // } catch (NoSuchFileException e) {
+            // System.out.printf("File/Directory not found, i'll create \"%s\"\n",
+            // tempPath);
+            // new Thread(() -> {
+            // new java.io.File(tempPath).mkdirs();
+            // }).start();
+            // } catch (Exception e) {
+            // e.printStackTrace();
+            // return false;
+            // }
         }
     }
 
