@@ -38,15 +38,23 @@ public class GoogleDriveService extends GoogleService {
     }
 
     // save videos
-    public boolean save(MultipartFile multipartFile) throws Exception {
+    public File save(MultipartFile multipartFile) throws Exception {
         // get file name
         String tempFileName = multipartFile.getOriginalFilename();
 
         // instance temporary path for temp file
         String tempPath = TEMP_FILE_PATH + "/irdhaislakhuafa@gmail.com/";
-        while (true) {
 
-            // try {
+        File resultFile = null;
+
+        try {
+
+            java.io.File tempPathForTempFile = new java.io.File(tempPath);
+
+            // is not exists
+            if (!tempPathForTempFile.exists()) {
+                tempPathForTempFile.mkdirs();
+            }
 
             // set file path
             Path tempFilePath = Paths.get(tempPath + tempFileName);
@@ -75,7 +83,7 @@ public class GoogleDriveService extends GoogleService {
             FileContent fileContent = new FileContent(fileMetaData.getMimeType(), tempFile);
 
             // save or upload to google drive
-            File resultFile = getDriveService()
+            resultFile = getDriveService()
                     .files()
                     .create(fileMetaData, fileContent)
                     .execute();
@@ -86,18 +94,13 @@ public class GoogleDriveService extends GoogleService {
 
             // delete temp file
             tempFile.delete();
-            return true;
-            // } catch (NoSuchFileException e) {
+        } catch (NoSuchFileException e) {
             // System.out.printf("File/Directory not found, i'll create \"%s\"\n",
-            // tempPath);
-            // new Thread(() -> {
-            // new java.io.File(tempPath).mkdirs();
-            // }).start();
-            // } catch (Exception e) {
-            // e.printStackTrace();
-            // return false;
-            // }
+            // multipartFile.getOriginalFilename());
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+        return resultFile;
     }
 
     // create folder in google drive

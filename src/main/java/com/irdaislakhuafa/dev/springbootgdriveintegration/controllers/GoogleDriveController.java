@@ -101,7 +101,10 @@ public class GoogleDriveController {
         // using multithread
         new Thread(() -> {
             try {
-                driveService.save(multipartFile);
+                System.out.printf("Starting upload \"%s\"...\n", multipartFile.getOriginalFilename());
+                File result = driveService.save(multipartFile);
+                System.out.printf("Successfully upload \"%s\"! \nFile Url \"%s\"", multipartFile.getOriginalFilename(),
+                        driveService.getUrlById(result.getId()));
             } catch (Exception e) {
                 e.printStackTrace();
             }
